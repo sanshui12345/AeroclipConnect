@@ -2,6 +2,7 @@ import ActivityKit
 import Combine
 import CoreBluetooth
 import Foundation
+import SwiftUI
 
 class BluetoothManager: NSObject, ObservableObject {
     @Published var connectionState: ConnectionState = .idle
