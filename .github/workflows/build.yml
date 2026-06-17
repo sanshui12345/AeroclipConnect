@@ -3,27 +3,31 @@ name: Build IPA
 on:
   push:
     branches: [main, master]
-  workflow_dispatch:   # 允许手动触发
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-14   # Apple Silicon，速度更快
+    runs-on: macos-14
 
     steps:
       - name: 拉取代码
         uses: actions/checkout@v4
 
+      - name: 查看可用 Xcode 版本
+        run: ls /Applications/ | grep Xcode
+
       - name: 安装 XcodeGen
         run: brew install xcodegen
 
       - name: 生成 Xcode 项目
-        run: xcodegen generate --spec project.yml
-
-      - name: 选择 Xcode 版本
-        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+        run: |
+          xcodegen generate --spec project.yml
+          echo "生成的文件："
+          ls -la
 
       - name: 编译归档（不签名）
         run: |
+          set -o pipefail
           xcodebuild archive \
             -project AeroclipConnect.xcodeproj \
             -scheme AeroclipConnect \
@@ -33,16 +37,17 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
             ONLY_ACTIVE_ARCH=NO \
-            | xcpretty || true
+            2>&1
 
       - name: 打包为 IPA
         run: |
           APP_PATH=$(find "$RUNNER_TEMP/AeroclipConnect.xcarchive/Products" -name "*.app" | head -1)
+          echo "App 路径: $APP_PATH"
           mkdir -p "$RUNNER_TEMP/Payload"
           cp -r "$APP_PATH" "$RUNNER_TEMP/Payload/"
           cd "$RUNNER_TEMP"
           zip -qr AeroclipConnect.ipa Payload/
-          echo "IPA size: $(du -sh AeroclipConnect.ipa | cut -f1)"
+          echo "IPA 大小: $(du -sh AeroclipConnect.ipa | cut -f1)"
 
       - name: 上传 IPA
         uses: actions/upload-artifact@v4

@@ -32,10 +32,8 @@ targets:
       - path: AeroclipWidget
       # 共享 ActivityKit 数据模型
       - path: AeroclipConnect/AeroclipLiveActivity.swift
-      # 共享电量 UI 组件
-      - path: AeroclipConnect/ConnectionPopupView.swift
-        buildPhase: sources
-        compilerFlags: ""
+      # 共享电量 UI 组件（独立文件，不含 BluetoothManager 依赖）
+      - path: AeroclipConnect/BatteryCell.swift
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.aeroclipapp.connect.widget
