@@ -1,0 +1,44 @@
+name: AeroclipConnect
+options:
+  bundleIdPrefix: com.aeroclipapp
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.2"
+  createIntermediateGroups: true
+
+targets:
+
+  AeroclipConnect:
+    type: application
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: AeroclipConnect
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aeroclipapp.connect
+        INFOPLIST_FILE: AeroclipConnect/Info.plist
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: ""
+    dependencies:
+      - target: AeroclipWidget
+        embed: true
+
+  AeroclipWidget:
+    type: app-extension
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - path: AeroclipWidget
+      # 共享 ActivityKit 数据模型
+      - path: AeroclipConnect/AeroclipLiveActivity.swift
+      # 共享电量 UI 组件
+      - path: AeroclipConnect/ConnectionPopupView.swift
+        buildPhase: sources
+        compilerFlags: ""
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.aeroclipapp.connect.widget
+        INFOPLIST_FILE: AeroclipWidget/Info.plist
+        SWIFT_VERSION: "5.9"
+        DEVELOPMENT_TEAM: ""
